@@ -1,9 +1,11 @@
-pragma solidity >=0.8.2 <0.9.0;
+//SPDX-License-Identifier: MIT
+pragma solidity 0.8.30;
 
 /**
- * @title Storage
- * @dev Store & retrieve value in a variable
- * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
+ * @title KipuBank - Bóveda de depósito y retiro de ETH con límites
+ * @author Dev ramlpp
+ * @notice Permite a los usuarios depositar y retirar ETH bajo ciertas restricciones
+ * @dev Este contrato sigue buenas prácticas de seguridad y documentación en Solidity
  */
 contract kipubank {
 
