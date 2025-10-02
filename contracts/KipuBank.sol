@@ -16,4 +16,18 @@ contract kipubank {
     /// @notice Límite máximo de depósito por transacción
     /// @dev Se define en el constructor y no puede modificarse
     uint256 public immutable depositLimitPerTx;
+
+    /// @notice Mapa que almacena el saldo de ETH de cada dirección
+    mapping(address => uint256) private _balances;
+
+    /// @notice Total de ETH depositado en el contrato
+    uint256 public totalDeposited;
+
+    /// @notice Número total de depósitos realizados
+    uint256 public depositCount;
+
+    /// @notice Número total de retiros realizados
+    uint256 public withdrawCount;
+
+    
 }
