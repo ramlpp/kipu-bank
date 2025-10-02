@@ -12,5 +12,8 @@ contract kipubank {
     /// @notice Límite máximo de retiro por transacción
     /// @dev Se define en el constructor y no puede modificarse
     uint256 public immutable withdrawLimitPerTx;
-
+    
+    /// @notice Límite máximo de depósito por transacción
+    /// @dev Se define en el constructor y no puede modificarse
+    uint256 public immutable depositLimitPerTx;
 }
