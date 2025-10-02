@@ -30,4 +30,14 @@ contract kipubank {
     uint256 public withdrawCount;
 
     
+    // ──────── EVENTOS ────────
+
+    // ──────── CONSTRUCTOR ────────
+
+    // ──────── MODIFICADORES ────────
+
+    // ──────── FUNCIONES PÚBLICAS / EXTERNAS ────────
+
+    // ──────── FUNCIONES INTERNAS / PRIVADAS ────────
+
 }
