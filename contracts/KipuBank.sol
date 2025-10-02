@@ -9,21 +9,8 @@ pragma solidity 0.8.30;
  */
 contract kipubank {
 
-    uint256 number;
+    /// @notice Límite máximo de retiro por transacción
+    /// @dev Se define en el constructor y no puede modificarse
+    uint256 public immutable withdrawLimitPerTx;
 
-    /**
-     * @dev Store value in variable
-     * @param num value to store
-     */
-    function store(uint256 num) public {
-        number = num;
-    }
-
-    /**
-     * @dev Return value 
-     * @return value of 'number'
-     */
-    function retrieve() public view returns (uint256){
-        return number;
-    }
 }
