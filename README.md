@@ -108,7 +108,7 @@ kipuBank.balanceOf(0x1234...);
 ## 📍 Dirección del contrato desplegado
 
 ```
-Sepolia Testnet: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Sepolia Testnet: ESTO FALTA!
 ```
 
 ---
