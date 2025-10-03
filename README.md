@@ -107,8 +107,6 @@ kipuBank.balanceOf(0x1234...);
 
 ## 📍 Dirección del contrato desplegado
 
-> 📝 Reemplazar con la dirección real en testnet cuando lo despliegues.
-
 ```
 Sepolia Testnet: 0xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
