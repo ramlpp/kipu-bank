@@ -73,8 +73,54 @@ contract kipubank {
         _;
     }
 
-    // ──────── FUNCIONES PÚBLICAS / EXTERNAS ────────
+    // ──────── FUNCIONES EXTERNAS ────────
 
-    // ──────── FUNCIONES INTERNAS / PRIVADAS ────────
+    /**
+     * @notice Deposita ETH en la bóveda personal
+     */
+    function deposit() external payable nonZero(msg.value) {
+        if (totalDeposited + msg.value > bankCap) {
+            revert BankCapExceeded(msg.value, totalDeposited, bankCap);
+        }
 
+        _balances[msg.sender] += msg.value;
+        totalDeposited += msg.value;
+        depositCount++;
+
+        emit Deposit(msg.sender, msg.value, _balances[msg.sender], totalDeposited);
+    }
+
+    /**
+     * @notice Retira ETH de la bóveda personal hasta el límite permitido
+     * @param amount Monto a retirar en wei
+     */
+    function withdraw(uint256 amount) external nonZero(amount) {
+        uint256 balance = _balances[msg.sender];
+
+        if (amount > balance) revert InsufficientBalance(amount, balance);
+        if (amount > withdrawLimitPerTx) revert WithdrawLimitExceeded(amount, withdrawLimitPerTx);
+
+        _balances[msg.sender] -= amount;
+        totalDeposited -= amount;
+        withdrawCount++;
+
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        if (!success) revert TransferFailed();
+
+        emit Withdraw(msg.sender, amount, _balances[msg.sender], totalDeposited);
+    }
+
+    /**
+     * @notice Consulta el saldo en la bóveda de un usuario
+     * @param user Dirección a consultar
+     */
+    function balanceOf(address user) external view returns (uint256) {
+        return _balances[user];
+    }
+
+    // ──────── FUNCIONES PRIVADAS ────────
+    /// @dev Ejemplo de función privada auxiliar (podrías expandirla para contadores por usuario)
+    function _addBalance(address user, uint256 amount) private {
+        _balances[user] += amount;
+    }
 }
