@@ -123,4 +123,9 @@ contract kipubank {
     function _addBalance(address user, uint256 amount) private {
         _balances[user] += amount;
     }
+
+    // ──────── RECEIVE / FALLBACK ────────
+    receive() external payable {
+        deposit();
+    }
 }
