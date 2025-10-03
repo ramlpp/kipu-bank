@@ -67,6 +67,11 @@ contract kipubank {
     }
 
     // ──────── MODIFICADORES ────────
+    /// @dev Verifica que el monto sea mayor que cero
+    modifier nonZero(uint256 amount) {
+        if (amount == 0) revert ZeroAmount();
+        _;
+    }
 
     // ──────── FUNCIONES PÚBLICAS / EXTERNAS ────────
 
