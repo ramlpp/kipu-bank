@@ -39,6 +39,22 @@ contract kipubank {
     /// @notice Evento emitido cuando un usuario retira
     event Withdraw(address indexed user, uint256 amount, uint256 balance, uint256 totalDeposited);
 
+    // ──────── ERRORES PERSONALIZADOS ────────
+    /// @notice Error cuando el monto es cero
+    error ZeroAmount();
+
+    /// @notice Error cuando el depósito excede el límite global del banco
+    error BankCapExceeded(uint256 attempted, uint256 total, uint256 cap);
+
+    /// @notice Error cuando el usuario intenta retirar más de su saldo
+    error InsufficientBalance(uint256 requested, uint256 available);
+
+    /// @notice Error cuando el retiro excede el límite por transacción
+    error WithdrawLimitExceeded(uint256 requested, uint256 limit);
+
+    /// @notice Error cuando la transferencia falla
+    error TransferFailed();
+    
     // ──────── CONSTRUCTOR ────────
 
     // ──────── MODIFICADORES ────────
