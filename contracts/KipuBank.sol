@@ -78,7 +78,7 @@ contract kipubank {
     /**
      * @notice Deposita ETH en la bóveda personal
      */
-    function deposit() external payable nonZero(msg.value) {
+    function deposit() public payable nonZero(msg.value) {
         if (totalDeposited + msg.value > bankCap) {
             revert BankCapExceeded(msg.value, totalDeposited, bankCap);
         }
