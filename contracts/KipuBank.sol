@@ -16,7 +16,7 @@ contract kipubank {
     
     /// @notice Límite máximo de depósito por transacción
     /// @dev Se define en el constructor y no puede modificarse
-    uint256 public immutable depositLimitPerTx;
+    uint256 public immutable bankCap;
 
     // ──────── VARIABLES DE ESTADO ────────
     /// @notice Mapa que almacena el saldo de ETH de cada dirección
