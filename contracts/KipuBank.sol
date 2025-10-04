@@ -9,7 +9,10 @@ pragma solidity 0.8.30;
  */
 contract kipubank {
 
-    // ──────── VARIABLES INMUTABLES ────────
+
+    /*////////////////////////////////////////
+    //  ────── VARIABLES INMUTABLES ──────  //
+    ////////////////////////////////////////*/
     /// @notice Límite máximo de retiro por transacción
     /// @dev Se define en el constructor y no puede modificarse
     uint256 public immutable withdrawLimitPerTx;
@@ -18,7 +21,10 @@ contract kipubank {
     /// @dev Se define en el constructor y no puede modificarse
     uint256 public immutable bankCap;
 
-    // ──────── VARIABLES DE ESTADO ────────
+
+    /*////////////////////////////////////////
+    //  ────────VARIABLES DE ESTADO───────  //
+    ////////////////////////////////////////*/
     /// @notice Mapa que almacena el saldo de ETH de cada dirección
     mapping(address => uint256) private _balances;
 
@@ -32,14 +38,20 @@ contract kipubank {
     uint256 public withdrawCount;
 
     
-    // ──────── EVENTOS ────────
+
+    /*////////////////////////////////////////
+    //  ───────────── EVENTOS ────────────  //
+    ////////////////////////////////////////*/
     /// @notice Evento emitido cuando un usuario deposita
     event Deposit(address indexed user, uint256 amount, uint256 balance, uint256 totalDeposited);
 
     /// @notice Evento emitido cuando un usuario retira
     event Withdraw(address indexed user, uint256 amount, uint256 balance, uint256 totalDeposited);
 
-    // ──────── ERRORES PERSONALIZADOS ────────
+
+    /*////////////////////////////////////////
+    //   ──────ERRORES PERSONALIZADOS─────  //
+    ////////////////////////////////////////*/
     /// @notice Error cuando el monto es cero
     error ZeroAmount();
 
@@ -55,7 +67,10 @@ contract kipubank {
     /// @notice Error cuando la transferencia falla
     error TransferFailed();
 
-    // ──────── CONSTRUCTOR ────────
+
+    /*////////////////////////////////////////
+    //  ─────────── CONSTRUCTOR ──────────  //
+    ////////////////////////////////////////*/
     /**
      * @param _bankCap Límite global máximo de depósitos en el contrato
      * @param _withdrawLimitPerTx Límite máximo de retiro por transacción
@@ -66,15 +81,20 @@ contract kipubank {
         withdrawLimitPerTx = _withdrawLimitPerTx;
     }
 
-    // ──────── MODIFICADORES ────────
+
+    /*////////////////////////////////////////
+    // ─────────── MODIFICADORES ────────── //
+    ////////////////////////////////////////*/
     /// @dev Verifica que el monto sea mayor que cero
     modifier nonZero(uint256 amount) {
         if (amount == 0) revert ZeroAmount();
         _;
     }
 
-    // ──────── FUNCIONES EXTERNAS ────────
 
+    /*////////////////////////////////////////
+    // ──────── FUNCIONES EXTERNAS ──────── //
+    ////////////////////////////////////////*/
     /**
      * @notice Deposita ETH en la bóveda personal
      */
@@ -118,13 +138,19 @@ contract kipubank {
         return _balances[user];
     }
 
-    // ──────── FUNCIONES PRIVADAS ────────
+
+    /*////////////////////////////////////////
+    // ──────── FUNCIONES PRIVADAS ──────── //
+    ////////////////////////////////////////*/
     /// @dev Ejemplo de función privada auxiliar (podrías expandirla para contadores por usuario)
     function _addBalance(address user, uint256 amount) private {
         _balances[user] += amount;
     }
 
-    // ──────── RECEIVE / FALLBACK ────────
+    
+    /*////////////////////////////////////////
+    // ──────── RECEIVE / FALLBACK ──────── //
+    ////////////////////////////////////////*/
     receive() external payable {
         deposit();
     }
