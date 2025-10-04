@@ -108,7 +108,7 @@ kipuBank.balanceOf(0x1234...);
 ## 📍 Dirección del contrato desplegado
 
 ```
-Sepolia Testnet: ESTO FALTA!
+Sepolia Testnet: https://sepolia.etherscan.io/tx/0xff000adbb3e60dc3a877bc5dcdbf541e79255c37c25cb8dd0453618752341471
 ```
 
 ---
