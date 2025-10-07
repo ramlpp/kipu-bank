@@ -98,19 +98,19 @@ contract KipuBank {
     // ──────── FUNCIONES EXTERNAS ──────── //
     ////////////////////////////////////////*/
     /**
-     * @notice Deposita ETH en la bóveda personal
-     */
-    function deposit() public payable nonZero(msg.value) {
-        if (totalDeposited + msg.value > bankCap) {
-            revert BankCapExceeded(msg.value, totalDeposited, bankCap);
-        }
-
-        _balances[msg.sender] += msg.value;
-        totalDeposited += msg.value;
-        depositCount++;
-
-        emit Deposit(msg.sender, msg.value, _balances[msg.sender], totalDeposited);
+ * @notice Deposita ETH en la bóveda personal
+ */
+function deposit() external payable nonZero(msg.value) {
+    if (totalDeposited + msg.value > bankCap) {
+        revert BankCapExceeded(msg.value, totalDeposited, bankCap);
     }
+
+    _addBalance(msg.sender, msg.value);
+    totalDeposited += msg.value;
+    depositCount++;
+
+    emit Deposit(msg.sender, msg.value, _balances[msg.sender], totalDeposited);
+}
 
     /**
      * @notice Retira ETH de la bóveda personal hasta el límite permitido
