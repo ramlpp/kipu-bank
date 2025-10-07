@@ -154,6 +154,6 @@ function deposit() external payable nonZero(msg.value) {
     // ──────── RECEIVE / FALLBACK ──────── //
     ////////////////////////////////////////*/
     receive() external payable {
-        deposit();
+        this.deposit{value: msg.value}();
     }
 }
