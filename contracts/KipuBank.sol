@@ -69,6 +69,19 @@ contract KipuBank {
     /// @notice Error si los parámetros del constructor son inválidos
     error InvalidConstructorParams();
 
+    /// @notice Error para reentrancy
+error ErrReentrantCall();
+
+bool private locked;
+
+/// @notice Previene reentrancy en funciones críticas
+modifier nonReentrant() {
+    if (locked) revert ErrReentrantCall();
+    locked = true;
+    _;
+    locked = false;
+}
+
 
     /*////////////////////////////////////////
     //  ─────────── CONSTRUCTOR ──────────  //
@@ -116,7 +129,7 @@ function deposit() external payable nonZero(msg.value) {
      * @notice Retira ETH de la bóveda personal hasta el límite permitido
      * @param amount Monto a retirar en wei
      */
-    function withdraw(uint256 amount) external nonZero(amount) {
+    function withdraw(uint256 amount) external nonReentrant nonZero(amount) {
         uint256 balance = _balances[msg.sender];
 
         if (amount > balance) revert InsufficientBalance(amount, balance);

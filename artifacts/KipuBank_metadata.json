@@ -43,6 +43,11 @@
 				"type": "error"
 			},
 			{
+				"inputs": [],
+				"name": "ErrReentrantCall",
+				"type": "error"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -297,6 +302,11 @@
 						"notice": "Error cuando el depósito excede el límite global del banco"
 					}
 				],
+				"ErrReentrantCall()": [
+					{
+						"notice": "Error para reentrancy"
+					}
+				],
 				"InsufficientBalance(uint256,uint256)": [
 					{
 						"notice": "Error cuando el usuario intenta retirar más de su saldo"
@@ -379,11 +389,11 @@
 	},
 	"sources": {
 		"contracts/KipuBank.sol": {
-			"keccak256": "0xf28bf57a2fa1228bf023f1e0187f40792ea90c154e29126641916919ed15dd27",
+			"keccak256": "0x3b4ccbc88c000fcdf78008299ac1496dcbb1c4b2eace3ed17d51426baddabac6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8008c054a22d3e487161c70ced457571be6ffe891055963542834b2fb0748266",
-				"dweb:/ipfs/QmbW5Jp3jf9s6LHHNSkASgtufxUg5e1CayWKrZSmyprxF8"
+				"bzz-raw://37e7a6e7bf350ace49b094479e4768c2d504fcfdba80b5815deaed602495399c",
+				"dweb:/ipfs/QmUUuf2Jo25x8H2NiTsFQo7xsCiNpcBGwWEEpB9CYzbdgX"
 			]
 		}
 	},
