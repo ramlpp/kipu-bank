@@ -79,7 +79,7 @@ contract KipuBank {
      * @param _withdrawLimitPerTx Límite máximo de retiro por transacción
      */
     constructor(uint256 _bankCap, uint256 _withdrawLimitPerTx) {
-        require(_bankCap > 0 && _withdrawLimitPerTx > 0, "Valores invalidos");
+        if (_bankCap == 0 || _withdrawLimitPerTx == 0) revert InvalidConstructorParams();
         bankCap = _bankCap;
         withdrawLimitPerTx = _withdrawLimitPerTx;
     }
