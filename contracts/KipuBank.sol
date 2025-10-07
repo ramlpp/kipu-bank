@@ -87,7 +87,7 @@ contract KipuBank {
     /*////////////////////////////////////////
     // ─────────── MODIFICADORES ────────── //
     ////////////////////////////////////////*/
-    /// @dev Verifica que el monto sea mayor que cero
+    /// @dev Revert when amount == 0
     modifier nonZero(uint256 amount) {
         if (amount == 0) revert ZeroAmount();
         _;
