@@ -1,0 +1,384 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_bankCap",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_withdrawLimitPerTx",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "attempted",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "total",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "cap",
+						"type": "uint256"
+					}
+				],
+				"name": "BankCapExceeded",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "requested",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "available",
+						"type": "uint256"
+					}
+				],
+				"name": "InsufficientBalance",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TransferFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "requested",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "limit",
+						"type": "uint256"
+					}
+				],
+				"name": "WithdrawLimitExceeded",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ZeroAmount",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "balance",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "totalDeposited",
+						"type": "uint256"
+					}
+				],
+				"name": "Deposit",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "balance",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "totalDeposited",
+						"type": "uint256"
+					}
+				],
+				"name": "Withdraw",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "bankCap",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "deposit",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "depositCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalDeposited",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdrawCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdrawLimitPerTx",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"author": "Dev ramlpp",
+			"details": "Este contrato sigue buenas prácticas de seguridad y documentación en Solidity",
+			"kind": "dev",
+			"methods": {
+				"balanceOf(address)": {
+					"params": {
+						"user": "Dirección a consultar"
+					}
+				},
+				"constructor": {
+					"params": {
+						"_bankCap": "Límite global máximo de depósitos en el contrato",
+						"_withdrawLimitPerTx": "Límite máximo de retiro por transacción"
+					}
+				},
+				"withdraw(uint256)": {
+					"params": {
+						"amount": "Monto a retirar en wei"
+					}
+				}
+			},
+			"stateVariables": {
+				"bankCap": {
+					"details": "Se define en el constructor y no puede modificarse"
+				},
+				"withdrawLimitPerTx": {
+					"details": "Se define en el constructor y no puede modificarse"
+				}
+			},
+			"title": "KipuBank - Bóveda de depósito y retiro de ETH con límites",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"BankCapExceeded(uint256,uint256,uint256)": [
+					{
+						"notice": "Error cuando el depósito excede el límite global del banco"
+					}
+				],
+				"InsufficientBalance(uint256,uint256)": [
+					{
+						"notice": "Error cuando el usuario intenta retirar más de su saldo"
+					}
+				],
+				"TransferFailed()": [
+					{
+						"notice": "Error cuando la transferencia falla"
+					}
+				],
+				"WithdrawLimitExceeded(uint256,uint256)": [
+					{
+						"notice": "Error cuando el retiro excede el límite por transacción"
+					}
+				],
+				"ZeroAmount()": [
+					{
+						"notice": "Error cuando el monto es cero"
+					}
+				]
+			},
+			"events": {
+				"Deposit(address,uint256,uint256,uint256)": {
+					"notice": "Evento emitido cuando un usuario deposita"
+				},
+				"Withdraw(address,uint256,uint256,uint256)": {
+					"notice": "Evento emitido cuando un usuario retira"
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"balanceOf(address)": {
+					"notice": "Consulta el saldo en la bóveda de un usuario"
+				},
+				"bankCap()": {
+					"notice": "Límite máximo de depósito por transacción"
+				},
+				"deposit()": {
+					"notice": "Deposita ETH en la bóveda personal"
+				},
+				"depositCount()": {
+					"notice": "Número total de depósitos realizados"
+				},
+				"totalDeposited()": {
+					"notice": "Total de ETH depositado en el contrato"
+				},
+				"withdraw(uint256)": {
+					"notice": "Retira ETH de la bóveda personal hasta el límite permitido"
+				},
+				"withdrawCount()": {
+					"notice": "Número total de retiros realizados"
+				},
+				"withdrawLimitPerTx()": {
+					"notice": "Límite máximo de retiro por transacción"
+				}
+			},
+			"notice": "Permite a los usuarios depositar y retirar ETH bajo ciertos parametros",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/KipuBank.sol": "Kipubank"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/KipuBank.sol": {
+			"keccak256": "0xe64740bb4a349562db69bb2787f3478d360970577a294b1e193f9151d2f7511f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://65340319842a024916e1e86bc4571ce67d3dcb176680b808cde98118654b3f2f",
+				"dweb:/ipfs/QmXaYZsqKZYG3ypuAdPBBvgX3AeRampQmjoYY1cDyPiSvL"
+			]
+		}
+	},
+	"version": 1
+}

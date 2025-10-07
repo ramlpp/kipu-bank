@@ -7,7 +7,7 @@ pragma solidity 0.8.30;
  * @notice Permite a los usuarios depositar y retirar ETH bajo ciertos parametros
  * @dev Este contrato sigue buenas prácticas de seguridad y documentación en Solidity
  */
-contract kipubank {
+contract KipuBank {
 
 
     /*////////////////////////////////////////
