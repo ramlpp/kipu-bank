@@ -67,6 +67,9 @@ contract KipuBank {
     /// @notice Error cuando la transferencia falla
     error TransferFailed();
 
+    /// @notice Error si los parámetros del constructor son inválidos
+    error InvalidConstructorParams();
+
 
     /*////////////////////////////////////////
     //  ─────────── CONSTRUCTOR ──────────  //

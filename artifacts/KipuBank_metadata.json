@@ -60,6 +60,11 @@
 			},
 			{
 				"inputs": [],
+				"name": "InvalidConstructorParams",
+				"type": "error"
+			},
+			{
+				"inputs": [],
 				"name": "TransferFailed",
 				"type": "error"
 			},
@@ -300,6 +305,11 @@
 						"notice": "Error cuando el usuario intenta retirar más de su saldo"
 					}
 				],
+				"InvalidConstructorParams()": [
+					{
+						"notice": "Error si los parámetros del constructor son inválidos"
+					}
+				],
 				"TransferFailed()": [
 					{
 						"notice": "Error cuando la transferencia falla"
@@ -372,11 +382,11 @@
 	},
 	"sources": {
 		"contracts/KipuBank.sol": {
-			"keccak256": "0x870fe9fe25b02f37b69244b0f5672ba9a3d4b577543919d3ef16aaa5a9b57b61",
+			"keccak256": "0x591353c0fdbb233688a0a4b6d8440a40c00c90072e0f09b4757400a3e1c1928e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://da1c92f815d9086d405576bf7ed5b95385a2355a63bcf882e8596685de8cfbdb",
-				"dweb:/ipfs/QmT7ycjjbotKMTeatqqyt12Hng4KzXYUGkL2yC1BcGfu9B"
+				"bzz-raw://c3fca4c6afe7fc3199f9d8698f93d60ed07a9648013dcf3d733f740c2a486f8b",
+				"dweb:/ipfs/QmecKcLz5xk54njZGG1ULS96dL5PX9YGJYyGcgcXVqLZDb"
 			]
 		}
 	},
