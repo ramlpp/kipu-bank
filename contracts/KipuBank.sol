@@ -17,8 +17,7 @@ contract KipuBank {
     /// @dev Se define en el constructor y no puede modificarse
     uint256 public immutable withdrawLimitPerTx;
     
-    /// @notice Límite máximo de depósito por transacción
-    /// @dev Se define en el constructor y no puede modificarse
+    /// @notice Límite global máximo de depósitos en el contrato
     uint256 public immutable bankCap;
 
 
