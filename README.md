@@ -112,7 +112,7 @@ Red: Sepolia Testnet
 
 Explorador: Etherscan - Sepolia
 
-Dirección del Contrato: 
+Dirección del Contrato: https://sepolia.etherscan.io/tx/0x26d1c30959b68cf1ab7aa1196f0b456c8e8f5491ad9ddb3cc407c255f0fb0e69
 
 Compilador: Solidity 0.8.30
 
