@@ -139,4 +139,4 @@ Eres libre de usarlo, modificarlo y distribuirlo, siempre que se mantenga la atr
 
 dev ramlpp
 Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
-GitHub:
+GitHub: https://github.com/ramlupp
