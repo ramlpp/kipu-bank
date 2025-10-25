@@ -1,0 +1,575 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_bankCapUsd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_withdrawLimitUsd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_defaultPriceFeed",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "attemptedUsd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalUsd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "capUsd",
+						"type": "uint256"
+					}
+				],
+				"name": "ErrBankCapExceeded",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "available",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "requested",
+						"type": "uint256"
+					}
+				],
+				"name": "ErrInsufficientBalance",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ErrReentrantCall",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "ErrTransferFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ErrUnauthorized",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "requestedUsd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "limitUsd",
+						"type": "uint256"
+					}
+				],
+				"name": "ErrWithdrawLimitExceeded",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ErrZeroAmount",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidConstructorParams",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountUsd",
+						"type": "uint256"
+					}
+				],
+				"name": "Deposit",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "oldOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnerChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "feed",
+						"type": "address"
+					}
+				],
+				"name": "PriceFeedSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountUsd",
+						"type": "uint256"
+					}
+				],
+				"name": "Withdraw",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "INTERNAL_DECIMALS",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "balanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "bankCapUsd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "defaultPriceFeed",
+				"outputs": [
+					{
+						"internalType": "contract AggregatorV3Interface",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "depositERC20",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "depositETH",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "priceFeeds",
+				"outputs": [
+					{
+						"internalType": "contract AggregatorV3Interface",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "setOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "feed",
+						"type": "address"
+					}
+				],
+				"name": "setPriceFeed",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalDepositCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalDepositedUsd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalWithdrawCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawERC20",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawETH",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdrawLimitUsd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"constructor": {
+					"params": {
+						"_bankCapUsd": "límite global del banco (en unidades con INTERNAL_DECIMALS, p.ej 100 * 10**6 para 100 USD)",
+						"_defaultPriceFeed": "dirección del agregador Chainlink para ETH/USD (usado cuando token == address(0))",
+						"_withdrawLimitUsd": "límite de retiro por tx (en INTERNAL_DECIMALS)"
+					}
+				},
+				"depositERC20(address,uint256)": {
+					"params": {
+						"amount": "cantidad de token (en unidades token)",
+						"token": "dirección del token ERC20"
+					}
+				},
+				"withdrawERC20(address,uint256)": {
+					"params": {
+						"amount": "cantidad en unidades token",
+						"token": "dirección del token"
+					}
+				},
+				"withdrawETH(uint256)": {
+					"params": {
+						"amount": "cantidad en wei"
+					}
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"INTERNAL_DECIMALS()": {
+					"notice": "número de decimales que adoptamos para la contabilidad interna (USDC style)"
+				},
+				"balanceOf(address,address)": {
+					"notice": "Obtener saldo del usuario para un token"
+				},
+				"bankCapUsd()": {
+					"notice": "Límite global del banco en valor USD (con INTERNAL_DECIMALS)"
+				},
+				"defaultPriceFeed()": {
+					"notice": "Oráculo por defecto (ej. ETH/USD) usado cuando token == address(0)"
+				},
+				"depositERC20(address,uint256)": {
+					"notice": "Depositar ERC20. El usuario debe aprobar antes."
+				},
+				"depositETH()": {
+					"notice": "Depositar ETH (usar address(0) para representar ETH internamente)"
+				},
+				"owner()": {
+					"notice": "owner simple (control administrativo)"
+				},
+				"priceFeeds(address)": {
+					"notice": "mapping token => price feed aggregator (Chainlink)"
+				},
+				"setOwner(address)": {
+					"notice": "Cambiar owner"
+				},
+				"setPriceFeed(address,address)": {
+					"notice": "Asignar/actualizar price feed para un token (token == address(0) para ETH no debería cambiarse)"
+				},
+				"totalDepositCount()": {
+					"notice": "contadores"
+				},
+				"totalDepositedUsd()": {
+					"notice": "total depositado en USD (internal decimals) — aproximado en tiempo real según conversiones realizadas"
+				},
+				"withdrawERC20(address,uint256)": {
+					"notice": "Retirar ERC20 token"
+				},
+				"withdrawETH(uint256)": {
+					"notice": "Retirar ETH (address(0))"
+				},
+				"withdrawLimitUsd()": {
+					"notice": "Límite de retiro por transacción expresado en USD (con INTERNAL_DECIMALS)"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/KipuBankV2.sol": "KipuBankV2"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"src/KipuBankV2.sol": {
+			"keccak256": "0x54367d24bb25bfd166773ccac9cdc7dd8a71f5879e334a651c9a6d57c7ccad8d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a707c8da874ab76d1526c158b7fa47eaa399fa14bafee66564057ab443dcf417",
+				"dweb:/ipfs/QmPWJ6b8mBFDmcZXtmXDqmjcRo1gefmJnpxwdJJ5TaXeBy"
+			]
+		}
+	},
+	"version": 1
+}
