@@ -112,7 +112,7 @@ Red: Sepolia Testnet
 
 Explorador: Etherscan - Sepolia
 
-Dirección del Contrato: 0xXXXXXXXXXXXXXXX (reemplazar con la tuya una vez desplegado)
+Dirección del Contrato: 
 
 Compilador: Solidity 0.8.30
 
@@ -140,4 +140,3 @@ Eres libre de usarlo, modificarlo y distribuirlo, siempre que se mantenga la atr
 dev ramlpp
 Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
 GitHub:
-Direccion del contrato desplegado:
