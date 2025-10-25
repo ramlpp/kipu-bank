@@ -305,8 +305,7 @@ contract KipuBankV2{
 
     /* ========== RECIVE ========== */
     // cambie el fallback por recive
-    recive() external payable {
-        // reject arbitrary calldata
-        revert();
+    receive() external payable {
+      revert();
     }
 }
