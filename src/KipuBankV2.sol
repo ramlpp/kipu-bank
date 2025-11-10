@@ -85,14 +85,32 @@ contract KipuBankV2{
 
     /* ========== ERRORS ========== */
 
+    /// @notice Se lanza cuando el argumento amount es cero
     error ErrZeroAmount();
+
+    /// @notice Se lanza cuando el intento de depósito excede el límite global (USD internal)
     error ErrBankCapExceeded(uint256 attemptedUsd, uint256 totalUsd, uint256 capUsd);
+
+    /// @notice Se lanza cuando el usuario solicita más de lo que tiene
     error ErrInsufficientBalance(address token, uint256 available, uint256 requested);
+
+    /// @notice Se lanza cuando el retiro (USD) excede el límite por transacción
     error ErrWithdrawLimitExceeded(uint256 requestedUsd, uint256 limitUsd);
+
+    /// @notice Se lanza cuando una transferencia falla (ERC20 o ETH)
     error ErrTransferFailed(address to, address token, uint256 amount);
+
+    /// @notice Se lanza cuando un caller no está autorizado
     error ErrUnauthorized();
+
+    /// @notice Se lanza en caso de reentrancy detectado
     error ErrReentrantCall();
+
+    /// @notice Parámetros inválidos del constructor
     error InvalidConstructorParams();
+
+    /// @notice Se lanza cuando el oráculo devuelve datos inválidos
+    error InvalidOracleResponse(uint80 roundId, uint256 updatedAt, uint80 answeredInRound);
 
     /* ========== REENTRANCY GUARD ========== */
 
@@ -113,7 +131,8 @@ contract KipuBankV2{
 
     /* ========== MODIFIERS ========== */
 
-    /// @dev Revert when amount == 0
+    /// @notice Revert when amount == 0
+    /// @dev Usa ErrZeroAmount para ahorrar gas en comparación con require con string
     modifier nonZero(uint256 amount) {
         if (amount == 0) revert ErrZeroAmount();
         _;
@@ -136,18 +155,45 @@ contract KipuBankV2{
 
     /* ========== ADMIN FUNCTIONS ========== */
 
-    /// @notice Asignar/actualizar price feed para un token (token == address(0) para ETH no debería cambiarse)
+    /**
+     * @notice Asignar/actualizar price feed para un token (token == address(0) para ETH no debería cambiarse)
+     * @dev Solo puede ser llamado por el owner.
+     * @param token Dirección del token ERC20 (usar address(0) para ETH si desea override)
+     * @param feed Dirección del AggregatorV3Interface (Chainlink) correspondiente al token
+     */
     function setPriceFeed(address token, address feed) external onlyOwner {
         priceFeeds[token] = AggregatorV3Interface(feed);
         emit PriceFeedSet(token, feed);
     }
 
-    /// @notice Cambiar owner
+    /**
+     * @notice Cambiar owner
+     * @dev Solo owner puede llamar. No permite owner = address(0).
+     * @param newOwner Nueva dirección del owner
+     */
     function setOwner(address newOwner) external onlyOwner {
         require(newOwner != address(0), "zero owner");
         address old = owner;
         owner = newOwner;
         emit OwnerChanged(old, newOwner);
+    }
+
+    /* ========== PRIVATE HELPERS ========== */
+
+    /**
+     * @dev Actualiza el balance interno para `user` y `token`.
+     * @param token Token address (address(0) para ETH)
+     * @param user Cuenta del usuario
+     * @param amount Cantidad en unidades del token
+     * @param isDeposit true => sumar, false => restar
+     */
+    function _updateBalance(address token, address user, uint256 amount, bool isDeposit) private {
+        if (isDeposit) {
+            balances[token][user] += amount;
+        } else {
+            // asumimos que ya se validó balance >= amount antes de llamar
+            balances[token][user] -= amount;
+        }
     }
 
     /* ========== DEPOSIT FUNCTIONS ========== */
@@ -160,8 +206,8 @@ contract KipuBankV2{
         uint256 amountUsd = _convertToUsd(address(0), msg.value);
         if (totalDepositedUsd + amountUsd > bankCapUsd) revert ErrBankCapExceeded(amountUsd, totalDepositedUsd, bankCapUsd);
 
-        // efectos
-        balances[address(0)][msg.sender] += msg.value;
+        // efectos (unificados via helper)
+        _updateBalance(address(0), msg.sender, msg.value, true);
         totalDepositCount++;
         totalDepositedUsd += amountUsd;
 
@@ -185,14 +231,13 @@ contract KipuBankV2{
         // conversión
         uint256 amountUsd = _convertToUsd(token, amount);
         if (totalDepositedUsd + amountUsd > bankCapUsd) {
-            // revert and return tokens
-            // attempt to refund (best-effort)
+            // revert and return tokens (best-effort)
             IERC20(token).transfer(msg.sender, amount);
             revert ErrBankCapExceeded(amountUsd, totalDepositedUsd, bankCapUsd);
         }
 
-        // efectos
-        balances[token][msg.sender] += amount;
+        // efectos (unificados via helper)
+        _updateBalance(token, msg.sender, amount, true);
         totalDepositCount++;
         totalDepositedUsd += amountUsd;
 
@@ -212,10 +257,9 @@ contract KipuBankV2{
         uint256 amountUsd = _convertToUsd(address(0), amount);
         if (amountUsd > withdrawLimitUsd) revert ErrWithdrawLimitExceeded(amountUsd, withdrawLimitUsd);
 
-        // efectos
-        balances[address(0)][msg.sender] = bal - amount;
+        // efectos (unificados via helper)
+        _updateBalance(address(0), msg.sender, amount, false);
         totalWithdrawCount++;
-        // ajustamos totalDepositedUsd (nota: valor depende de precio actual — ver tradeoffs)
         totalDepositedUsd = (amountUsd > totalDepositedUsd) ? 0 : (totalDepositedUsd - amountUsd);
 
         // interacción
@@ -237,8 +281,8 @@ contract KipuBankV2{
         uint256 amountUsd = _convertToUsd(token, amount);
         if (amountUsd > withdrawLimitUsd) revert ErrWithdrawLimitExceeded(amountUsd, withdrawLimitUsd);
 
-        // efectos
-        balances[token][msg.sender] = bal - amount;
+        // efectos (unificados via helper)
+        _updateBalance(token, msg.sender, amount, false);
         totalWithdrawCount++;
         totalDepositedUsd = (amountUsd > totalDepositedUsd) ? 0 : (totalDepositedUsd - amountUsd);
 
@@ -268,12 +312,17 @@ contract KipuBankV2{
     /**
      * @notice Convierte una cantidad de `token` (en sus unidades) a USD con INTERNAL_DECIMALS.
      * @dev Para ETH usar token == address(0). Usa priceFeeds[token] o defaultPriceFeed.
+     *      Valida la integridad de la respuesta del oráculo (updatedAt y answeredInRound).
      */
     function _convertToUsd(address token, uint256 amount) internal view returns (uint256) {
         AggregatorV3Interface feed = _getFeed(token);
-        (, int256 price, , ,) = feed.latestRoundData();
+        (uint80 roundId, int256 price, , uint256 updatedAt, uint80 answeredInRound) = feed.latestRoundData();
         uint8 feedDecimals = feed.decimals(); // p.ej. 8
-        if (price <= 0) return 0;
+
+        // validaciones de oráculo
+        if (price <= 0) revert InvalidOracleResponse(roundId, updatedAt, answeredInRound);
+        if (updatedAt == 0) revert InvalidOracleResponse(roundId, updatedAt, answeredInRound);
+        if (answeredInRound < roundId) revert InvalidOracleResponse(roundId, updatedAt, answeredInRound);
 
         uint8 tokenDecimals = 18;
         if (token != address(0)) {
@@ -303,9 +352,16 @@ contract KipuBankV2{
         }
     }
 
-    /* ========== RECIVE ========== */
-    // cambie el fallback por recive
+    /* ========== RECEIVE / FALLBACK ========== */
+
+    /// @notice Permite recibir ETH directo y lo redirige a depositETH
     receive() external payable {
-      revert();
+        // depositETH es external, por eso hacemos llamada externa
+        this.depositETH{value: msg.value}();
+    }
+
+    /// @notice Rechaza llamadas con calldata no válidos
+    fallback() external payable {
+        revert();
     }
 }

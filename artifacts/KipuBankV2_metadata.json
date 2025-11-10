@@ -126,6 +126,27 @@
 				"type": "error"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint80",
+						"name": "roundId",
+						"type": "uint80"
+					},
+					{
+						"internalType": "uint256",
+						"name": "updatedAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint80",
+						"name": "answeredInRound",
+						"type": "uint80"
+					}
+				],
+				"name": "InvalidOracleResponse",
+				"type": "error"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -224,6 +245,10 @@
 				],
 				"name": "Withdraw",
 				"type": "event"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "fallback"
 			},
 			{
 				"inputs": [],
@@ -480,6 +505,19 @@
 						"token": "dirección del token ERC20"
 					}
 				},
+				"setOwner(address)": {
+					"details": "Solo owner puede llamar. No permite owner = address(0).",
+					"params": {
+						"newOwner": "Nueva dirección del owner"
+					}
+				},
+				"setPriceFeed(address,address)": {
+					"details": "Solo puede ser llamado por el owner.",
+					"params": {
+						"feed": "Dirección del AggregatorV3Interface (Chainlink) correspondiente al token",
+						"token": "Dirección del token ERC20 (usar address(0) para ETH si desea override)"
+					}
+				},
 				"withdrawERC20(address,uint256)": {
 					"params": {
 						"amount": "cantidad en unidades token",
@@ -495,6 +533,53 @@
 			"version": 1
 		},
 		"userdoc": {
+			"errors": {
+				"ErrBankCapExceeded(uint256,uint256,uint256)": [
+					{
+						"notice": "Se lanza cuando el intento de depósito excede el límite global (USD internal)"
+					}
+				],
+				"ErrInsufficientBalance(address,uint256,uint256)": [
+					{
+						"notice": "Se lanza cuando el usuario solicita más de lo que tiene"
+					}
+				],
+				"ErrReentrantCall()": [
+					{
+						"notice": "Se lanza en caso de reentrancy detectado"
+					}
+				],
+				"ErrTransferFailed(address,address,uint256)": [
+					{
+						"notice": "Se lanza cuando una transferencia falla (ERC20 o ETH)"
+					}
+				],
+				"ErrUnauthorized()": [
+					{
+						"notice": "Se lanza cuando un caller no está autorizado"
+					}
+				],
+				"ErrWithdrawLimitExceeded(uint256,uint256)": [
+					{
+						"notice": "Se lanza cuando el retiro (USD) excede el límite por transacción"
+					}
+				],
+				"ErrZeroAmount()": [
+					{
+						"notice": "Se lanza cuando el argumento amount es cero"
+					}
+				],
+				"InvalidConstructorParams()": [
+					{
+						"notice": "Parámetros inválidos del constructor"
+					}
+				],
+				"InvalidOracleResponse(uint80,uint256,uint80)": [
+					{
+						"notice": "Se lanza cuando el oráculo devuelve datos inválidos"
+					}
+				]
+			},
 			"kind": "user",
 			"methods": {
 				"INTERNAL_DECIMALS()": {
@@ -563,11 +648,11 @@
 	},
 	"sources": {
 		"src/KipuBankV2.sol": {
-			"keccak256": "0x54367d24bb25bfd166773ccac9cdc7dd8a71f5879e334a651c9a6d57c7ccad8d",
+			"keccak256": "0xd21a7af1a1beb5f8ef7af16a515aa4e81c4390c68c4902d401e4a62274ab8b7e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a707c8da874ab76d1526c158b7fa47eaa399fa14bafee66564057ab443dcf417",
-				"dweb:/ipfs/QmPWJ6b8mBFDmcZXtmXDqmjcRo1gefmJnpxwdJJ5TaXeBy"
+				"bzz-raw://a9a79d67dcffcae7281ac0748f302b456cd22b5c06d7d8c4e66be88bfe9e9bc7",
+				"dweb:/ipfs/QmPkcUr13KbjMCR9MoAtcSTAG8ERcLNUSoSV1TdiuhC7nJ"
 			]
 		}
 	},

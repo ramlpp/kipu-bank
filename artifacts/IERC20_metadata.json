@@ -197,11 +197,11 @@
 	},
 	"sources": {
 		"src/KipuBankV2.sol": {
-			"keccak256": "0x54367d24bb25bfd166773ccac9cdc7dd8a71f5879e334a651c9a6d57c7ccad8d",
+			"keccak256": "0xd21a7af1a1beb5f8ef7af16a515aa4e81c4390c68c4902d401e4a62274ab8b7e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://a707c8da874ab76d1526c158b7fa47eaa399fa14bafee66564057ab443dcf417",
-				"dweb:/ipfs/QmPWJ6b8mBFDmcZXtmXDqmjcRo1gefmJnpxwdJJ5TaXeBy"
+				"bzz-raw://a9a79d67dcffcae7281ac0748f302b456cd22b5c06d7d8c4e66be88bfe9e9bc7",
+				"dweb:/ipfs/QmPkcUr13KbjMCR9MoAtcSTAG8ERcLNUSoSV1TdiuhC7nJ"
 			]
 		}
 	},
