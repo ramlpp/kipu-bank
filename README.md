@@ -1,142 +1,134 @@
-# 🏦 KipuBank V2
+# 🏦 KipuBank V3
 
-**KipuBank V2** es la versión evolucionada del contrato inteligente original **KipuBank**, desarrollado como parte del proyecto final del curso de Solidity.  
-Este nuevo contrato incorpora técnicas avanzadas de desarrollo, seguridad y arquitectura de contratos inteligentes, orientadas a un entorno más cercano a producción.
+**KipuBank V3** es la evolución del contrato inteligente **KipuBank V2**, desarrollado como parte del proyecto final del curso de Solidity.  
+Esta nueva versión introduce un modelo más moderno de conversión automática de activos mediante Uniswap, eliminando dependencias de oráculos y optimizando la experiencia de depósito y retiro en USDC.
 
 ---
 
 ## 📘 Descripción General
 
-KipuBank V2 funciona como una **bóveda de depósito y retiro de activos**, soportando tanto **Ether (ETH)** como **tokens ERC-20**, con límites definidos, control de acceso y conversión de valores en USD a través de **Chainlink Oracles**.  
-El objetivo del contrato es ofrecer una infraestructura simple y segura para manejar depósitos y retiros bajo reglas claras, siguiendo buenas prácticas de diseño y seguridad en Solidity.
+KipuBank V3 actúa como una **bóveda inteligente de depósitos y retiros**, donde los usuarios pueden enviar **ETH o tokens ERC-20** y el contrato automáticamente los convierte a **USDC** a través de **Uniswap V2 Router**.  
+El objetivo es simplificar la interacción del usuario: todo se contabiliza en USDC, con un **tope máximo de capacidad (`bankCapUsd`)**, protección ante reentrancy y validaciones de seguridad.
 
 ---
 
-## 🚀 Mejoras Implementadas en la Versión V2
+## 🚀 Mejoras Implementadas en la Versión V3
 
 | Área | Mejora | Descripción |
 |------|---------|-------------|
-| **Control de acceso** | `AccessControl` (OpenZeppelin) | Se añadió un rol administrativo `ADMIN_ROLE` con privilegios especiales (como actualizar límites o pausar el contrato). |
-| **Soporte multi-token** | Depósitos y retiros en ETH y ERC-20 | Se agregó compatibilidad para diferentes tokens, gestionados mediante mappings anidados: `balances[token][user]`. |
-| **Contabilidad interna** | Unificación de saldos | Se implementó un sistema centralizado de contabilidad interna que identifica ETH como `address(0)`. |
-| **Oráculo Chainlink** | Conversión ETH/USD | Se agregó una integración con un **Data Feed** de Chainlink para convertir los valores de ETH en USD y así controlar el `bankCap` en base al valor actual del mercado. |
-| **Seguridad** | `nonReentrant` + `checks-effects-interactions` | Se aplicó el patrón estándar de seguridad para prevenir ataques de reentrancy. |
-| **Errores personalizados** | Mejor manejo de errores | Se definieron errores específicos (`InvalidParams`, `Unauthorized`, `TokenTransferFailed`, etc.) para reducir consumo de gas y mejorar la trazabilidad. |
-| **Optimización de gas** | Uso de `immutable` y `constant` | Variables de configuración definidas como `immutable` y constantes globales en mayúsculas para claridad. |
-| **Eventos adicionales** | Auditoría y trazabilidad | Nuevos eventos para depósitos, retiros y actualizaciones de configuración. |
-| **Conversión de decimales** | Compatibilidad multi-token | Implementación de una función que ajusta valores a 6 decimales (como USDC) para uniformidad contable. |
+| **Conversión automática** | Swaps Uniswap V2 | Los depósitos de ETH o tokens se convierten automáticamente a USDC mediante Uniswap V2 Router. |
+| **Eliminación de oráculos externos** | Simplificación | Se eliminó la dependencia de Chainlink Data Feeds; ahora las conversiones se realizan on-chain a precios de mercado. |
+| **Optimización de arquitectura** | Código más compacto | Eliminación de AccessControl y uso de una lógica interna de `owner` más ligera. |
+| **Seguridad mejorada** | `nonReentrant` + validaciones | Protección ante reentrancy, revertencias seguras y verificación de límites del banco. |
+| **Gestión de WETH** | Conversión ETH→WETH→USDC | Se agregó soporte completo para el flujo nativo de ETH, incluyendo envoltura (wrap) y aprobación. |
+| **Errores personalizados** | Gas optimizado | Se mantienen revert messages compactas y errores personalizados (`SwapFailed`, `BankCapExceeded`, etc.). |
+| **Eventos uniformes** | Auditoría clara | Se estandarizaron los eventos de depósito y retiro para una trazabilidad uniforme. |
 
 ---
 
 ## 🧱 Estructura del Proyecto
 
-KipuBankV2/  
+KipuBankV3/  
 ├── src/  
-│   └── KipuBankV2.sol  
+│   └── KipuBankV3.sol  
 └── README.md  
 
-- **src/KipuBankV2.sol** → Contrato principal con todas las mejoras.  
-- **README.md** → Este archivo.  
+- **src/KipuBankV3.sol** → Contrato principal con las funcionalidades de swap y contabilidad en USDC.  
+- **README.md** → Documentación del proyecto.  
 
 ---
 
 ## ⚙️ Tecnologías y Librerías Utilizadas
 
 - Solidity ^0.8.30  
-- OpenZeppelin Contracts  
-  - AccessControl  
-  - ReentrancyGuard  
-  - IERC20  
-- Chainlink Data Feeds  
+- Interfaz Uniswap V2 Router 02  
+- Interfaz IERC20  
+- Interfaz IWETH  
+- Remix IDE + MetaMask para despliegue  
 
 ---
 
 ## 🧩 Principales Variables y Componentes
 
-mapping(address => mapping(address => uint256)) private _balances; // token => usuario => saldo
-bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-AggregatorV3Interface public immutable priceFeed; // Oráculo Chainlink ETH/USD
-uint256 public immutable withdrawLimitPerTx;
-uint256 public immutable bankCapUSD;
+```solidity
+address public immutable USDC;
+IUniswapV2Router02 public immutable router;
+address public immutable WETH;
+uint256 public immutable bankCapUsd;
+uint256 public totalUsdc;
+mapping(address => uint256) private usdcBalances;
+🔹 Funciones clave
+depositUSDC(uint256 amountUsdc) — Deposita directamente USDC.
 
-🧠 Decisiones de Diseño y Trade-offs
+depositETHSwapToUSDC(uint256 minUsdcOut) — Envía ETH y lo convierte automáticamente a USDC.
 
-Se optó por usar AccessControl en lugar de Ownable para permitir la expansión de roles y responsabilidades.
+depositTokenSwapToUSDC(address token, uint256 amountIn, uint256 minUsdcOut) — Deposita cualquier token ERC-20 convertible a USDC.
 
-La contabilidad multi-token permite manejar tanto ETH como tokens ERC-20 de forma unificada.
+withdrawUSDC(uint256 amountUsdc) — Retira tu saldo en USDC.
 
-El oráculo Chainlink fue elegido por su confiabilidad y descentralización, permitiendo límites dinámicos basados en precio USD.
+usdcBalanceOf(address user) — Consulta tu saldo interno.
 
-Se prefirió mantener la lógica del depósito simple, pero con una capa de seguridad adicional (reentrancy guard).
+💡 Ejemplos de Uso
+Depositar ETH y convertirlo a USDC
+kipuBank.depositETHSwapToUSDC{value: 0.01 ether}(0);
 
-Los eventos permiten auditorías más claras, emitiendo siempre antes de cualquier transferencia externa.
+Depositar tokens ERC-20 y convertirlos a USDC
+kipuBank.depositTokenSwapToUSDC(DAI_ADDRESS, 100 * 1e18, 0);
 
-💡 Ejemplo de Uso
+Consultar saldo
+kipuBank.usdcBalanceOf(msg.sender);
 
-Depositar ETH:
-
-kipuBank.deposit{value: 1 ether}(address(0));
-
-
-Depositar un token ERC-20:
-
-kipuBank.depositToken(USDC_ADDRESS, 100 * 1e6);
-
-
-Consultar saldo:
-
-kipuBank.balanceOf(address(0), msg.sender);
-
-
-Retirar fondos:
-
-kipuBank.withdraw(address(0), 0.5 ether);
+Retirar fondos
+kipuBank.withdrawUSDC(50 * 1e6);
 
 🔒 Seguridad y Buenas Prácticas Aplicadas
-
 Uso del patrón Checks-Effects-Interactions.
 
-Reentrancy Guard en funciones críticas.
+Protección contra reentrancy.
 
-Validaciones estrictas de parámetros y errores personalizados.
+Validaciones estrictas de parámetros.
 
-No se usan llamadas transfer() ni send(), sino .call{value: amount}("") seguro.
+Safe approve pattern para tokens ERC-20.
 
-Funciones administrativas restringidas a ADMIN_ROLE.
+Reversiones seguras con errores personalizados.
 
-Pruebas con valores límites y validaciones contra depósitos o retiros nulos.
+Eventos emitidos antes de cualquier interacción externa.
 
 🌐 Despliegue en Testnet
+Red: Base Sepolia Testnet
 
-Red: Sepolia Testnet
+Explorador: RouteScan
 
-Explorador: Etherscan - Sepolia
-
-Dirección del Contrato: https://sepolia.etherscan.io/tx/0x26d1c30959b68cf1ab7aa1196f0b456c8e8f5491ad9ddb3cc407c255f0fb0e69
+Contrato verificado:
+Ver en RouteScan
 
 Compilador: Solidity 0.8.30
 
-Framework: Remix IDE + MetaMask
+Entorno: Remix IDE + MetaMask
 
 🧭 Instrucciones para Clonar y Ejecutar
 # 1. Clonar el repositorio
-git clone https://github.com/TuUSER/KipuBankV2.git
+git clone https://github.com/ramlupp/KipuBankV3.git
 
-# 2. Abrir Remix IDE o VSCode con Solidity plugin
+# 2. Abrir Remix IDE o VSCode con extensión Solidity
 
 # 3. Compilar el contrato
 pragma solidity ^0.8.30
 
-# 4. Desplegar en testnet Sepolia
-Seleccionar "Injected Provider - MetaMask" como entorno
-
+# 4. Desplegar en testnet (Base Sepolia)
+Seleccionar "Injected Provider – MetaMask" como entorno
 📜 Licencia
-
 Este proyecto está bajo la Licencia MIT.
-Eres libre de usarlo, modificarlo y distribuirlo, siempre que se mantenga la atribución al autor original.
+Eres libre de usarlo, modificarlo y distribuirlo, manteniendo la atribución al autor original.
 
 ✍️ Autor
-
 dev ramlpp
 Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
 GitHub: https://github.com/ramlupp
+
+
+
+
+
+
+
