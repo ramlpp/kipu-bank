@@ -125,9 +125,5 @@ dev ramlpp
 Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
 GitHub: https://github.com/ramlupp
 
-
-
-
-
-
-
+URL al contrato verificado en routescan
+https://testnet.routescan.io/address/0x23661ce9aeC612e747BbDa48464D0c0b34EAF7Bd/contract/11155111/code
