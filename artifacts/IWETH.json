@@ -50,11 +50,9 @@
 		"gasEstimates": null,
 		"methodIdentifiers": {
 			"approve(address,uint256)": "095ea7b3",
-			"balanceOf(address)": "70a08231",
-			"decimals()": "313ce567",
-			"totalSupply()": "18160ddd",
+			"deposit()": "d0e30db0",
 			"transfer(address,uint256)": "a9059cbb",
-			"transferFrom(address,address,uint256)": "23b872dd"
+			"withdraw(uint256)": "2e1a7d4d"
 		}
 	},
 	"abi": [
@@ -83,48 +81,10 @@
 			"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"name": "balanceOf",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
 			"inputs": [],
-			"name": "decimals",
-			"outputs": [
-				{
-					"internalType": "uint8",
-					"name": "",
-					"type": "uint8"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"name": "totalSupply",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
+			"name": "deposit",
+			"outputs": [],
+			"stateMutability": "payable",
 			"type": "function"
 		},
 		{
@@ -136,7 +96,7 @@
 				},
 				{
 					"internalType": "uint256",
-					"name": "amount",
+					"name": "value",
 					"type": "uint256"
 				}
 			],
@@ -154,29 +114,13 @@
 		{
 			"inputs": [
 				{
-					"internalType": "address",
-					"name": "from",
-					"type": "address"
-				},
-				{
-					"internalType": "address",
-					"name": "to",
-					"type": "address"
-				},
-				{
 					"internalType": "uint256",
-					"name": "amount",
+					"name": "",
 					"type": "uint256"
 				}
 			],
-			"name": "transferFrom",
-			"outputs": [
-				{
-					"internalType": "bool",
-					"name": "",
-					"type": "bool"
-				}
-			],
+			"name": "withdraw",
+			"outputs": [],
 			"stateMutability": "nonpayable",
 			"type": "function"
 		}

@@ -280,8 +280,15 @@ contract KipuBankV3 {
     /* ========== FALLBACK / RECEIVE ========== */
 
     receive() external payable {
-        // forward to depositETHSwapToUSDC with zero minimum (not recommended in prod)
-        depositETHSwapToUSDC(0);
+        //Probe la siguiente linea pero remix no me la está compilando y no encuentro el error
+
+        // depositETHSwapToUSDC(0);
+        
+        //Entonces opté por está opcion robusta:
+        (bool success, ) = address(this).call(
+            abi.encodeWithSignature("depositETHSwapToUSDC(uint256)", 0)
+        );
+        require(success, "Deposit failed");
     }
 
     fallback() external payable {

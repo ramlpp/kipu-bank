@@ -1,0 +1,458 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_usdc",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_router",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_bankCapUsd",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "attempted",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "total",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "cap",
+						"type": "uint256"
+					}
+				],
+				"name": "BankCapExceeded",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "available",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "requested",
+						"type": "uint256"
+					}
+				],
+				"name": "InsufficientBalance",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "InvalidPath",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "NotOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "Reentrant",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "SwapFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "ZeroAmount",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "tokenIn",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountIn",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "usdcReceived",
+						"type": "uint256"
+					}
+				],
+				"name": "DepositConverted",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountUsdc",
+						"type": "uint256"
+					}
+				],
+				"name": "DepositUSDC",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "oldOwner",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnerChanged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amountUsdc",
+						"type": "uint256"
+					}
+				],
+				"name": "WithdrawUSDC",
+				"type": "event"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "fallback"
+			},
+			{
+				"inputs": [],
+				"name": "USDC",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "WETH",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "bankCapUsd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "minUsdcOut",
+						"type": "uint256"
+					}
+				],
+				"name": "depositETHSwapToUSDC",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amountIn",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minUsdcOut",
+						"type": "uint256"
+					}
+				],
+				"name": "depositTokenSwapToUSDC",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amountUsdc",
+						"type": "uint256"
+					}
+				],
+				"name": "depositUSDC",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "router",
+				"outputs": [
+					{
+						"internalType": "contract IUniswapV2Router02",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "setOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalUsdc",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					}
+				],
+				"name": "usdcBalanceOf",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "amountUsdc",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawUSDC",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {
+				"constructor": {
+					"params": {
+						"_bankCapUsd": "bank cap expressed in USDC smallest units (e.g. 100 * 10**6)",
+						"_router": "UniswapV2 router address",
+						"_usdc": "address of USDC token (accounting token)"
+					}
+				},
+				"depositETHSwapToUSDC(uint256)": {
+					"params": {
+						"minUsdcOut": "minimum acceptable USDC out to protect from slippage (USDC smallest units)"
+					}
+				},
+				"depositTokenSwapToUSDC(address,uint256,uint256)": {
+					"params": {
+						"amountIn": "amount of token being deposited (in token units)",
+						"minUsdcOut": "minimum acceptable USDC out to protect from slippage (USDC smallest units)",
+						"token": "token address to deposit"
+					}
+				},
+				"depositUSDC(uint256)": {
+					"params": {
+						"amountUsdc": "amount of USDC in USDC smallest units (6 decimals)"
+					}
+				},
+				"withdrawUSDC(uint256)": {
+					"params": {
+						"amountUsdc": "amount in USDC smallest units"
+					}
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"USDC()": {
+					"notice": "USDC token used by this bank (accounting token, expected decimals = 6)"
+				},
+				"WETH()": {
+					"notice": "WETH address (from router)"
+				},
+				"bankCapUsd()": {
+					"notice": "bank cap in USDC units (raw, e.g. 100 * 10**6 = 100 USDC)"
+				},
+				"depositETHSwapToUSDC(uint256)": {
+					"notice": "Deposit ETH (native). Contract swaps ETH -> USDC via UniswapV2."
+				},
+				"depositTokenSwapToUSDC(address,uint256,uint256)": {
+					"notice": "Deposit ERC20 token (not USDC). Contract swaps token -> USDC via UniswapV2.         Token must have a direct pair to USDC (path [token, USDC])."
+				},
+				"depositUSDC(uint256)": {
+					"notice": "Deposit USDC directly (user must approve this contract)"
+				},
+				"owner()": {
+					"notice": "owner/admin"
+				},
+				"router()": {
+					"notice": "UniswapV2 router"
+				},
+				"totalUsdc()": {
+					"notice": "total USDC held (in raw USDC units, e.g. 6 decimals)"
+				},
+				"withdrawUSDC(uint256)": {
+					"notice": "Withdraw USDC from your internal balance"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"src/KipuBankV3.sol": "KipuBankV3"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"src/KipuBankV3.sol": {
+			"keccak256": "0x939965451ad9d90e38316cd38ada88198ecd66236cbf0cd5318eea53c45c420e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ad8410f848bfd1232209cb0cfb32394d215b29759beb191aeb01b720c164421b",
+				"dweb:/ipfs/QmUHvB2Xqy9NGtF9w1pPxvmzw16coWZyotTLUH8ZRAzTEY"
+			]
+		}
+	},
+	"version": 1
+}
