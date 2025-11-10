@@ -50,7 +50,6 @@ KipuBankV3/
 
 ## 🧩 Principales Variables y Componentes
 
-```solidity
 address public immutable USDC;
 IUniswapV2Router02 public immutable router;
 address public immutable WETH;
