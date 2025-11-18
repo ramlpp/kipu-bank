@@ -100,16 +100,12 @@ contract KipuBankV3 {
      */
     constructor(address _usdc, address _router, uint256 _bankCapUsd) {
         if (_usdc == address(0) || _router == address(0) || _bankCapUsd == 0) revert ZeroAmount();
+    
         USDC = _usdc;
         router = IUniswapV2Router02(_router);
     
-        // INTENTA obtener WETH del router, si falla usa WETH de Sepolia
-        try router.WETH() returns (address weth) {
-            WETH = weth;
-        } catch {
-        // Fallback: WETH address en Sepolia
-            WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9;
-        }
+        // WETH address FIJO para Sepolia - EVITA llamar a router.WETH()
+        WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9;
     
         bankCapUsd = _bankCapUsd;
         owner = msg.sender;

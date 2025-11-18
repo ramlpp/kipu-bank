@@ -120,11 +120,11 @@
 	},
 	"sources": {
 		"src/KipuBankV3.sol": {
-			"keccak256": "0xd0f975d035d4ea16bf99463026739d5a3fb1859fe482cdd272d983493f6514a9",
+			"keccak256": "0xb4a199385f21520a0d36f16bce222242419c29026a3d2c5ed57a6f6777da14a0",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://feb5c440872cf3c858dc626a087088dd6d26174bc004e419e1aa185a6a016d0f",
-				"dweb:/ipfs/QmYLpUAvhR4muAfxU3tYmZ3gP1XKnjCvqsd6n2R4RGzJ4K"
+				"bzz-raw://da6e40813179217ab98c89e1d9d7b1364e01b2d702a19a400bc431f03779fc33",
+				"dweb:/ipfs/QmRdRD23v7xWosfbqMgpdrZdbJgTrgwGo6CY31voPJJyEc"
 			]
 		}
 	},
