@@ -279,16 +279,24 @@ contract KipuBankV3 {
 
     /* ========== FALLBACK / RECEIVE ========== */
 
-    receive() external payable {
-        //Probe la siguiente linea pero remix no me la está compilando y no encuentro el error
+    // receive() external payable {
+    //     //Probe la siguiente linea pero remix no me la está compilando y no encuentro el error
 
-        // depositETHSwapToUSDC(0);
+    //     // depositETHSwapToUSDC(0);
         
-        //Entonces opté por está opcion robusta:
-        (bool success, ) = address(this).call(
-            abi.encodeWithSignature("depositETHSwapToUSDC(uint256)", 0)
-        );
-        require(success, "Deposit failed");
+    //     //Entonces opté por está opcion robusta:
+    //     (bool success, ) = address(this).call(
+    //         abi.encodeWithSignature("depositETHSwapToUSDC(uint256)", 0)
+    //     );
+    //     require(success, "Deposit failed");
+    // }
+
+    // fallback() external payable {
+    //     revert();
+    // }
+    receive() external payable {
+    // Comentado lo anterior temporalmente para compilar
+        revert("Use depositETHSwapToUSDC function directly");
     }
 
     fallback() external payable {
