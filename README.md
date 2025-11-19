@@ -108,13 +108,13 @@ Interacciones Verificadas:
 ✅ setOwner - Funciones administrativas operativas
 
 🧪 Testing con Foundry
-# Ejecutar tests
+-- Ejecutar tests
 forge test
 
-# Generar reporte de cobertura
+-- Generar reporte de cobertura
 forge coverage --report summary
 
-# Ver tests detallados
+-- Ver tests detallados
 forge test -vv
 
 🔍 Análisis de Amenazas
@@ -137,16 +137,17 @@ Medidas de Mitigación:
 ✅ Safe approve pattern
 
 🧭 Instrucciones para Clonar y Ejecutar
-# 1. Clonar el repositorio
+-- 1. Clonar el repositorio
 git clone https://github.com/ramlupp/KipuBankV4.git
 
-# 2. Abrir Remix IDE o VSCode con extensión Solidity
+-- 2. Abrir Remix IDE o VSCode con extensión Solidity
 
-# 3. Compilar el contrato
+-- 3. Compilar el contrato
 pragma solidity ^0.8.30
 
-# 4. Desplegar en testnet (Base Sepolia)
+-- 4. Desplegar en testnet (Base Sepolia)
 Seleccionar "Injected Provider – MetaMask" como entorno
+
 📜 Licencia
 Este proyecto está bajo la Licencia MIT.
 Eres libre de usarlo, modificarlo y distribuirlo, manteniendo la atribución al autor original.
