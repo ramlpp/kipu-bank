@@ -1,83 +1,66 @@
-# 🏦 KipuBank V3
+# 🏦 KipuBank V4
 
-**KipuBank V3** es la evolución del contrato inteligente **KipuBank V2**, desarrollado como parte del proyecto final del curso de Solidity.  
-Esta nueva versión introduce un modelo más moderno de conversión automática de activos mediante Uniswap, eliminando dependencias de oráculos y optimizando la experiencia de depósito y retiro en USDC.
-
----
+**KipuBank V4** es la evolución del contrato inteligente KipuBank, desarrollado como proyecto final. Esta versión introduce conversión automática de activos mediante Uniswap V2, eliminando dependencias de oráculos y optimizando la experiencia DeFi.
 
 ## 📘 Descripción General
 
-KipuBank V3 actúa como una **bóveda inteligente de depósitos y retiros**, donde los usuarios pueden enviar **ETH o tokens ERC-20** y el contrato automáticamente los convierte a **USDC** a través de **Uniswap V2 Router**.  
-El objetivo es simplificar la interacción del usuario: todo se contabiliza en USDC, con un **tope máximo de capacidad (`bankCapUsd`)**, protección ante reentrancy y validaciones de seguridad.
+KipuBank V4 actúa como una **bóveda inteligente** donde los usuarios pueden depositar **ETH o tokens ERC-20** que se convierten automáticamente a **USDC** via Uniswap V2. Todo se contabiliza en USDC, con un **tope máximo de capacidad (`bankCapUsd`)**, protección ante reentrancy y validaciones de seguridad.
 
----
+## 🚀 Mejoras Implementadas
 
-## 🚀 Mejoras Implementadas en la Versión V3
-
-| Área | Mejora | Descripción |
-|------|---------|-------------|
-| **Conversión automática** | Swaps Uniswap V2 | Los depósitos de ETH o tokens se convierten automáticamente a USDC mediante Uniswap V2 Router. |
-| **Eliminación de oráculos externos** | Simplificación | Se eliminó la dependencia de Chainlink Data Feeds; ahora las conversiones se realizan on-chain a precios de mercado. |
-| **Optimización de arquitectura** | Código más compacto | Eliminación de AccessControl y uso de una lógica interna de `owner` más ligera. |
-| **Seguridad mejorada** | `nonReentrant` + validaciones | Protección ante reentrancy, revertencias seguras y verificación de límites del banco. |
-| **Gestión de WETH** | Conversión ETH→WETH→USDC | Se agregó soporte completo para el flujo nativo de ETH, incluyendo envoltura (wrap) y aprobación. |
-| **Errores personalizados** | Gas optimizado | Se mantienen revert messages compactas y errores personalizados (`SwapFailed`, `BankCapExceeded`, etc.). |
-| **Eventos uniformes** | Auditoría clara | Se estandarizaron los eventos de depósito y retiro para una trazabilidad uniforme. |
-
----
+- **Conversión automática**: Depósitos de ETH/tokens se convierten automáticamente a USDC via Uniswap V2
+- **Arquitectura optimizada**: Eliminación de dependencias complejas, lógica más eficiente
+- **Seguridad robusta**: Protección completa contra reentrancy y validaciones estrictas
+- **Soporte multi-token**: ETH + cualquier ERC-20 con par USDC en Uniswap
 
 ## 🧱 Estructura del Proyecto
 
-KipuBankV3/  
+KipuBankV4/  
 ├── src/  
-│   └── KipuBankV3.sol  
+│   └── KipuBankV4.sol
+├── foundry/  
+├── sreenshots/
 └── README.md  
 
-- **src/KipuBankV3.sol** → Contrato principal con las funcionalidades de swap y contabilidad en USDC.  
-- **README.md** → Documentación del proyecto.  
+- **src/KipuBankV4.sol** → Contrato principal con las funcionalidades de swap y contabilidad en USDC.  
+- **README.md** → Documentación del proyecto.
+- **screenshots/** → Capturas de pantalla de coverage-50%, test-passing y transactions-contract-etherscan.  
+- **foundry/** → Carpeta de foundry con sus test.  
 
 ---
 
-## ⚙️ Tecnologías y Librerías Utilizadas
+## ⚙️ Tecnologías Utilizadas
 
-- Solidity ^0.8.30  
-- Interfaz Uniswap V2 Router 02  
-- Interfaz IERC20  
-- Interfaz IWETH  
-- Remix IDE + MetaMask para despliegue  
+- **Solidity ^0.8.30**
+- **Foundry** - Framework de testing y deployment
+- **Uniswap V2 Router** - Para swaps automáticos
+- **OpenZeppelin Interfaces** - IERC20, IWETH
 
----
+## 🧩 Componentes Principales
 
-## 🧩 Principales Variables y Componentes
+**Variables Inmutables:**
+- `USDC` - Dirección del token USDC
+- `router` - Router de Uniswap V2
+- `WETH` - Dirección de WETH
+- `bankCapUsd` - Límite máximo del banco en USDC
 
-address public immutable USDC;
-IUniswapV2Router02 public immutable router;
-address public immutable WETH;
-uint256 public immutable bankCapUsd;
-uint256 public totalUsdc;
-mapping(address => uint256) private usdcBalances;
-🔹 Funciones clave
-depositUSDC(uint256 amountUsdc) — Deposita directamente USDC.
+**Funciones Clave:**
+- `depositUSDC(uint256 amountUsdc)` - Depósito directo de USDC
+- `depositETHSwapToUSDC(uint256 minUsdcOut)` - ETH → USDC automático
+- `depositTokenSwapToUSDC(address token, uint256 amountIn, uint256 minUsdcOut)` - Token → USDC
+- `withdrawUSDC(uint256 amountUsdc)` - Retiro de USDC
+- `usdcBalanceOf(address user)` - Consulta de saldo
 
-depositETHSwapToUSDC(uint256 minUsdcOut) — Envía ETH y lo convierte automáticamente a USDC.
+## 💡 Ejemplos de Uso
 
-depositTokenSwapToUSDC(address token, uint256 amountIn, uint256 minUsdcOut) — Deposita cualquier token ERC-20 convertible a USDC.
+// Depositar ETH
+kipuBank.depositETHSwapToUSDC{value: 0.01 ether}(500000); // min 0.5 USDC
 
-withdrawUSDC(uint256 amountUsdc) — Retira tu saldo en USDC.
+// Depositar Token ERC-20
+kipuBank.depositTokenSwapToUSDC(DAI_ADDRESS, 100 * 1e18, 95000000); // min 95 USDC
 
-usdcBalanceOf(address user) — Consulta tu saldo interno.
-
-💡 Ejemplos de Uso
-Depositar ETH y convertirlo a USDC
-kipuBank.depositETHSwapToUSDC{value: 0.01 ether}(0);
-
-Depositar tokens ERC-20 y convertirlos a USDC
-kipuBank.depositTokenSwapToUSDC(DAI_ADDRESS, 100 * 1e18, 0);
-
-Consultar saldo
-kipuBank.usdcBalanceOf(msg.sender);
-
-Retirar fondos
+// Consultar y Retirar
+uint256 balance = kipuBank.usdcBalanceOf(msg.sender);
 kipuBank.withdrawUSDC(50 * 1e6);
 
 🔒 Seguridad y Buenas Prácticas Aplicadas
@@ -93,6 +76,17 @@ Reversiones seguras con errores personalizados.
 
 Eventos emitidos antes de cualquier interacción externa.
 
+📊 Cobertura de Pruebas
+El proyecto incluye 28 tests en Foundry alcanzando:
+
+Líneas: 67.90% ✅ CUMPLE (>50% requerido)
+
+Statements: 63.35% ✅ CUMPLE (>50% requerido)
+
+Branches: 57.89% ✅ CUMPLE (>50% requerido)
+
+Funciones: 90.91% ✅ CUMPLE (>50% requerido)
+
 🌐 Despliegue en Testnet
 Red: Base Sepolia Testnet
 
@@ -105,9 +99,46 @@ Compilador: Solidity 0.8.30
 
 Entorno: Remix IDE + MetaMask
 
+Interacciones Verificadas:
+
+✅ depositUSDC - Transacción
+
+✅ withdrawUSDC - Transacción
+
+✅ setOwner - Funciones administrativas operativas
+
+🧪 Testing con Foundry
+# Ejecutar tests
+forge test
+
+# Generar reporte de cobertura
+forge coverage --report summary
+
+# Ver tests detallados
+forge test -vv
+
+🔍 Análisis de Amenazas
+Vulnerabilidades Identificadas:
+
+1- Front-running en swaps - Mineros pueden ver transacciones pendientes
+
+2- Slippage en Uniswap - Precios pueden cambiar entre tx y confirmación
+
+3- Approval attacks - Usuarios deben confiar en el contrato con approvals
+
+Medidas de Mitigación:
+
+✅ Límites de slippage (minUsdcOut)
+
+✅ Validaciones de bankCap antes de swaps
+
+✅ Reentrancy guards
+
+✅ Safe approve pattern
+
 🧭 Instrucciones para Clonar y Ejecutar
 # 1. Clonar el repositorio
-git clone https://github.com/ramlupp/KipuBankV3.git
+git clone https://github.com/ramlupp/KipuBankV4.git
 
 # 2. Abrir Remix IDE o VSCode con extensión Solidity
 
@@ -126,4 +157,4 @@ Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
 GitHub: https://github.com/ramlupp
 
 URL al contrato verificado en routescan
-https://testnet.routescan.io/address/0x23661ce9aeC612e747BbDa48464D0c0b34EAF7Bd/contract/11155111/code
+https://testnet.routescan.io/address/0x9Ab7AE5279A2446DE4Be3b15DcBb4bd79272Bd69
