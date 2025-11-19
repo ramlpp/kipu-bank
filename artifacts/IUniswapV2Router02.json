@@ -27,6 +27,10 @@
 		"Custom": {
 			"linkReferences": {},
 			"autoDeployLib": true
+		},
+		"sepolia:11155111": {
+			"linkReferences": {},
+			"autoDeployLib": true
 		}
 	},
 	"data": {
@@ -50,6 +54,7 @@
 		"gasEstimates": null,
 		"methodIdentifiers": {
 			"WETH()": "ad5c4648",
+			"getAmountsOut(uint256,address[])": "d06ca61f",
 			"swapExactETHForTokens(uint256,address[],address,uint256)": "7ff36ab5",
 			"swapExactTokensForTokens(uint256,uint256,address[],address,uint256)": "38ed1739"
 		}
@@ -66,6 +71,30 @@
 				}
 			],
 			"stateMutability": "pure",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "amountIn",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address[]",
+					"name": "path",
+					"type": "address[]"
+				}
+			],
+			"name": "getAmountsOut",
+			"outputs": [
+				{
+					"internalType": "uint256[]",
+					"name": "amounts",
+					"type": "uint256[]"
+				}
+			],
+			"stateMutability": "view",
 			"type": "function"
 		},
 		{

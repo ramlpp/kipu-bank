@@ -87,7 +87,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"src/KipuBankV3.sol": "IWETH"
+			"src/KipuBankV4.sol": "IWETH"
 		},
 		"evmVersion": "prague",
 		"libraries": {},
@@ -101,12 +101,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"src/KipuBankV3.sol": {
-			"keccak256": "0xb4a199385f21520a0d36f16bce222242419c29026a3d2c5ed57a6f6777da14a0",
+		"src/KipuBankV4.sol": {
+			"keccak256": "0x4cbb0e55e72ebe2e2a9451027d147b3ea533a9703f62fd8828611d0f4f3e47ff",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://da6e40813179217ab98c89e1d9d7b1364e01b2d702a19a400bc431f03779fc33",
-				"dweb:/ipfs/QmRdRD23v7xWosfbqMgpdrZdbJgTrgwGo6CY31voPJJyEc"
+				"bzz-raw://4f1bee7b96981d2c205f0626e9394fe0f3898629c36eb32671cf92f07f173d8a",
+				"dweb:/ipfs/QmNQcmjquFmsqEDXaqwv7WGXyEMM3uncWxrW3VvX3c2AQ5"
 			]
 		}
 	},
