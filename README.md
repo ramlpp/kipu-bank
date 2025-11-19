@@ -63,7 +63,8 @@ kipuBank.depositTokenSwapToUSDC(DAI_ADDRESS, 100 * 1e18, 95000000); // min 95 US
 uint256 balance = kipuBank.usdcBalanceOf(msg.sender);
 kipuBank.withdrawUSDC(50 * 1e6);
 
-🔒 Seguridad y Buenas Prácticas Aplicadas
+## 🔒 Seguridad y Buenas Prácticas Aplicadas
+
 Uso del patrón Checks-Effects-Interactions.
 
 Protección contra reentrancy.
@@ -76,7 +77,8 @@ Reversiones seguras con errores personalizados.
 
 Eventos emitidos antes de cualquier interacción externa.
 
-📊 Cobertura de Pruebas
+## 📊 Cobertura de Pruebas
+
 El proyecto incluye 28 tests en Foundry alcanzando:
 
 Líneas: 67.90% ✅ CUMPLE (>50% requerido)
@@ -87,7 +89,7 @@ Branches: 57.89% ✅ CUMPLE (>50% requerido)
 
 Funciones: 90.91% ✅ CUMPLE (>50% requerido)
 
-🌐 Despliegue en Testnet
+## 🌐 Despliegue en Testnet
 Red: Base Sepolia Testnet
 
 Explorador: RouteScan
@@ -99,7 +101,7 @@ Compilador: Solidity 0.8.30
 
 Entorno: Remix IDE + MetaMask
 
-Interacciones Verificadas:
+## Interacciones Verificadas:
 
 ✅ depositUSDC - Transacción
 
@@ -107,7 +109,7 @@ Interacciones Verificadas:
 
 ✅ setOwner - Funciones administrativas operativas
 
-🧪 Testing con Foundry:
+## 🧪 Testing con Foundry:
 
 -- Ejecutar tests
 forge test
@@ -118,7 +120,7 @@ forge coverage --report summary
 -- Ver tests detallados
 forge test -vv
 
-🔍 Análisis de Amenazas
+## 🔍 Análisis de Amenazas
 Vulnerabilidades Identificadas:
 
 1- Front-running en swaps - Mineros pueden ver transacciones pendientes
@@ -137,7 +139,7 @@ Medidas de Mitigación:
 
 ✅ Safe approve pattern
 
-🧭 Instrucciones para Clonar y Ejecutar:
+## 🧭 Instrucciones para Clonar y Ejecutar:
 
 -- 1. Clonar el repositorio
 git clone https://github.com/ramlupp/KipuBankV4.git
@@ -150,11 +152,11 @@ pragma solidity ^0.8.30
 -- 4. Desplegar en testnet (Base Sepolia)
 Seleccionar "Injected Provider – MetaMask" como entorno
 
-📜 Licencia
+## 📜 Licencia
 Este proyecto está bajo la Licencia MIT.
 Eres libre de usarlo, modificarlo y distribuirlo, manteniendo la atribución al autor original.
 
-✍️ Autor
+## ✍️ Autor
 dev ramlpp
 Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
 GitHub: https://github.com/ramlupp
