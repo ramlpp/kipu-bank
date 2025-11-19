@@ -2,7 +2,7 @@
 pragma solidity ^0.8.30;
 
 /**
- * @title KipuBankV3
+ * @title KipuBankV4
  * @notice Deposita tokens (ETH/ERC20) y los convierte automáticamente a USDC vía Uniswap V2 Router,
  *         acreditando al usuario el USDC resultante. Garantiza que el total en USDC nunca supere bankCapUsd.
  * @dev Usa checks-effects-interactions, nonReentrant guard, safe approve pattern y validaciones de input.
