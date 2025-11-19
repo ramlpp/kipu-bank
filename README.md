@@ -12,6 +12,39 @@ KipuBank V4 actúa como una **bóveda inteligente** donde los usuarios pueden de
 - **Arquitectura optimizada**: Eliminación de dependencias complejas, lógica más eficiente
 - **Seguridad robusta**: Protección completa contra reentrancy y validaciones estrictas
 - **Soporte multi-token**: ETH + cualquier ERC-20 con par USDC en Uniswap
+## 🔧 Mejoras Identificadas e Implementadas en Código
+
+### Mejoras de Seguridad Implementadas en el Código Fuente:
+
+**1. Validación de BankCap Antes del Swap ✅**
+
+Previene pérdida de fondos validando el límite ANTES de ejecutar swaps
+
+2. Límite Máximo de Retiro por Transacción ✅
+
+Protege contra retiros masivos y potenciales ataques
+
+3. Contadores de Operaciones y Cooldown ✅
+
+Tracking de actividad y prevención de spam
+
+4. Mejor Estimación de Swaps ✅
+
+Usa Uniswap para estimación precisa del output
+
+## Nota de Despliegue:
+
+El contrato actualmente desplegado en Sepolia (0x9Ab7AE5279A2446DE4Be3b15DcBb4bd79272Bd69) corresponde a la versión anterior del código.
+
+Las mejoras de seguridad mencionadas están implementadas src/KipuBankV3.sol en el repositorio pero no fueron desplegadas debido a limitaciones de tiempo. Un despliegue en producción incluiría estas mejoras críticas.
+
+Justificación Técnica: Validación pre-swap: Evita que usuarios pierdan gas en swaps que excederían el bankCap
+
+Límites de retiro: Mitiga riesgos de ataques y errores humanos
+
+Contadores: Permite análisis post-operación y detectar patrones sospechosos
+
+Estimación mejorada: Mayor precisión en la validación de capacity
 
 ## 🧱 Estructura del Proyecto
 
