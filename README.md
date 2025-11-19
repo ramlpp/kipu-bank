@@ -107,7 +107,8 @@ Interacciones Verificadas:
 
 ✅ setOwner - Funciones administrativas operativas
 
-🧪 Testing con Foundry
+🧪 Testing con Foundry:
+
 -- Ejecutar tests
 forge test
 
@@ -136,7 +137,8 @@ Medidas de Mitigación:
 
 ✅ Safe approve pattern
 
-🧭 Instrucciones para Clonar y Ejecutar
+🧭 Instrucciones para Clonar y Ejecutar:
+
 -- 1. Clonar el repositorio
 git clone https://github.com/ramlupp/KipuBankV4.git
 
