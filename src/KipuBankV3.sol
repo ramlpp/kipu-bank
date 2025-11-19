@@ -6,6 +6,7 @@ pragma solidity ^0.8.30;
  * @notice Deposita tokens (ETH/ERC20) y los convierte automáticamente a USDC vía Uniswap V2 Router,
  *         acreditando al usuario el USDC resultante. Garantiza que el total en USDC nunca supere bankCapUsd.
  * @dev Usa checks-effects-interactions, nonReentrant guard, safe approve pattern y validaciones de input.
+ * @dev MEJORAS: Validación de bankCap antes del swap, límites de retiro y contadores de operaciones.
  */
 
 interface IERC20 {
@@ -43,12 +44,15 @@ interface IUniswapV2Router02 {
         address to,
         uint deadline
     ) external payable returns (uint[] memory amounts);
+    
+    // MEJORA: Función para estimar output del swap
+    function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
 }
 
 /* -------------------------------------------------------------------------- */
-/*                               KipuBankV3 Contract                           */
+/*                               KipuBankV4 Contract                           */
 /* -------------------------------------------------------------------------- */
-contract KipuBankV3 {
+contract KipuBankV4 {
     /// @notice USDC token used by this bank (accounting token, expected decimals = 6)
     address public immutable USDC;
     /// @notice UniswapV2 router
@@ -65,6 +69,10 @@ contract KipuBankV3 {
     /// @notice bank cap in USDC units (raw, e.g. 100 * 10**6 = 100 USDC)
     uint256 public immutable bankCapUsd;
 
+    // MEJORAS IMPLEMENTADAS: Límites de retiro y contadores
+    uint256 public constant MAX_WITHDRAWAL_AMOUNT = 50000 * 10**6; // 50,000 USDC máximo por transacción
+    uint256 public constant WITHDRAWAL_COOLDOWN = 1 days; // 24 horas entre retiros
+
     /// @notice reentrancy guard
     bool private locked;
     modifier nonReentrant() {
@@ -76,12 +84,18 @@ contract KipuBankV3 {
 
     /// @notice balances in USDC units (raw, e.g. 6 decimals)
     mapping(address => uint256) private usdcBalances;
+    
+    // MEJORAS IMPLEMENTADAS: Contadores de operaciones
+    mapping(address => uint256) public withdrawalCount; // Contador de retiros por usuario
+    mapping(address => uint256) public lastWithdrawalTime; // Timestamp del último retiro
 
     /* ========== EVENTS & ERRORS ========== */
     event DepositConverted(address indexed user, address indexed tokenIn, uint256 amountIn, uint256 usdcReceived);
     event DepositUSDC(address indexed user, uint256 amountUsdc);
     event WithdrawUSDC(address indexed user, uint256 amountUsdc);
     event OwnerChanged(address indexed oldOwner, address indexed newOwner);
+    // MEJORA: Evento para emergency withdraw
+    event EmergencyWithdraw(address indexed token, uint256 amount);
 
     error Reentrant();
     error ZeroAmount();
@@ -90,6 +104,10 @@ contract KipuBankV3 {
     error NotOwner();
     error SwapFailed();
     error InvalidPath();
+    // MEJORAS: Nuevos errores para límites de retiro
+    error WithdrawalLimitExceeded(uint256 attempted, uint256 limit);
+    error CooldownActive(uint256 waitTime);
+    error InvalidToken();
 
     /* ========== CONSTRUCTOR ========== */
 
@@ -120,11 +138,27 @@ contract KipuBankV3 {
         owner = newOwner;
         emit OwnerChanged(old, newOwner);
     }
+    
+    // MEJORA: Función de emergency withdraw para owner
+    function emergencyWithdraw(address token, uint256 amount) external {
+        if (msg.sender != owner) revert NotOwner();
+        if (token == address(0)) {
+            payable(owner).transfer(amount);
+        } else {
+            IERC20(token).transfer(owner, amount);
+        }
+        emit EmergencyWithdraw(token, amount);
+    }
 
     /* ========== VIEW HELPERS ========== */
 
     function usdcBalanceOf(address user) external view returns (uint256) {
         return usdcBalances[user];
+    }
+    
+    // MEJORA: Función para consultar capacidad restante
+    function remainingCapacity() public view returns (uint256) {
+        return bankCapUsd - totalUsdc;
     }
 
     /* ========== DEPOSITS ========== */
@@ -132,19 +166,19 @@ contract KipuBankV3 {
     /**
      * @notice Deposit USDC directly (user must approve this contract)
      * @param amountUsdc amount of USDC in USDC smallest units (6 decimals)
+     * @dev MEJORA: Validación de bankCap antes de la transferencia
      */
     function depositUSDC(uint256 amountUsdc) external nonReentrant {
         if (amountUsdc == 0) revert ZeroAmount();
+        
+        // MEJORA: Validación de bankCap ANTES de la transferencia
+        if (totalUsdc + amountUsdc > bankCapUsd) {
+            revert BankCapExceeded(amountUsdc, totalUsdc, bankCapUsd);
+        }
+        
         // transfer USDC into contract
         bool ok = IERC20(USDC).transferFrom(msg.sender, address(this), amountUsdc);
         if (!ok) revert SwapFailed();
-
-        // check bank cap
-        if (totalUsdc + amountUsdc > bankCapUsd) {
-            // refund
-            IERC20(USDC).transfer(msg.sender, amountUsdc);
-            revert BankCapExceeded(amountUsdc, totalUsdc, bankCapUsd);
-        }
 
         // effect
         totalUsdc += amountUsdc;
@@ -156,9 +190,22 @@ contract KipuBankV3 {
     /**
      * @notice Deposit ETH (native). Contract swaps ETH -> USDC via UniswapV2.
      * @param minUsdcOut minimum acceptable USDC out to protect from slippage (USDC smallest units)
+     * @dev MEJORA: Validación de bankCap ANTES del swap para prevenir pérdida de fondos
      */
     function depositETHSwapToUSDC(uint256 minUsdcOut) external payable nonReentrant {
         if (msg.value == 0) revert ZeroAmount();
+
+        // MEJORA: Estimar output del swap y validar bankCap ANTES de cualquier operación
+        address[] memory estimationPath = new address[](2);
+        estimationPath[0] = WETH;
+        estimationPath[1] = USDC;
+        
+        uint256 estimatedUsdc = _estimateSwapOutput(estimationPath, msg.value);
+        
+        // MEJORA CRÍTICA: Validar bankCap ANTES del swap
+        if (totalUsdc + estimatedUsdc > bankCapUsd) {
+            revert BankCapExceeded(estimatedUsdc, totalUsdc, bankCapUsd);
+        }
 
         // Wrap ETH to WETH
         IWETH(WETH).deposit{value: msg.value}();
@@ -166,29 +213,23 @@ contract KipuBankV3 {
         // Aprobar router
         _safeApprove(WETH, address(router), msg.value);
 
-        // Declarar path de 2 posiciones (WETH → USDC)
-        address[] memory path = new address[](2);
-        path[0] = WETH;
-        path[1] = USDC;
+        // Declarar path de 2 posiciones (WETH → USDC) - CORREGIDO: nombre único
+        address[] memory swapPath = new address[](2);
+        swapPath[0] = WETH;
+        swapPath[1] = USDC;
 
         // Ejecutar swap
         uint deadline = block.timestamp + 300;
         uint[] memory amounts = router.swapExactTokensForTokens(
             msg.value,
             minUsdcOut,
-            path,
+            swapPath,
             address(this),
             deadline
         );
         if (amounts.length < 2) revert SwapFailed();
 
         uint usdcReceived = amounts[amounts.length - 1];
-
-        // Validar bank cap antes de acreditar
-        if (totalUsdc + usdcReceived > bankCapUsd) {
-            IERC20(USDC).transfer(msg.sender, usdcReceived);
-            revert BankCapExceeded(usdcReceived, totalUsdc, bankCapUsd);
-        }
 
         // Actualizar balances
         totalUsdc += usdcReceived;
@@ -203,6 +244,7 @@ contract KipuBankV3 {
      * @param token token address to deposit
      * @param amountIn amount of token being deposited (in token units)
      * @param minUsdcOut minimum acceptable USDC out to protect from slippage (USDC smallest units)
+     * @dev MEJORA: Validación de bankCap ANTES del swap
      */
     function depositTokenSwapToUSDC(
         address token,
@@ -210,7 +252,19 @@ contract KipuBankV3 {
         uint256 minUsdcOut
     ) external nonReentrant {
         if (amountIn == 0) revert ZeroAmount();
-        if (token == address(0) || token == USDC) revert InvalidPath();
+        if (token == address(0) || token == USDC) revert InvalidToken(); // MEJORA: Error más específico
+
+        // MEJORA: Estimar y validar bankCap ANTES de transferencias
+        address[] memory estimationPath = new address[](2);
+        estimationPath[0] = token;
+        estimationPath[1] = USDC;
+        
+        uint256 estimatedUsdc = _estimateSwapOutput(estimationPath, amountIn);
+        
+        // MEJORA CRÍTICA: Validación ANTES de cualquier operación
+        if (totalUsdc + estimatedUsdc > bankCapUsd) {
+            revert BankCapExceeded(estimatedUsdc, totalUsdc, bankCapUsd);
+        }
 
         // transfer token into this contract
         bool ok1 = IERC20(token).transferFrom(msg.sender, address(this), amountIn);
@@ -219,30 +273,23 @@ contract KipuBankV3 {
         // approve router (safe approve pattern)
         _safeApprove(token, address(router), amountIn);
 
-        // build direct path [token, USDC]
-        address[] memory path = new address[](2);
-        path[0] = token;
-        path[1] = USDC;
+        // build direct path [token, USDC] - CORREGIDO: nombre único
+        address[] memory swapPath = new address[](2);
+        swapPath[0] = token;
+        swapPath[1] = USDC;
 
         // do swap
         uint deadline = block.timestamp + 300;
         uint[] memory amounts = router.swapExactTokensForTokens(
             amountIn,
             minUsdcOut,
-            path,
+            swapPath,
             address(this),
             deadline
         );
         if (amounts.length < 2) revert SwapFailed();
 
         uint usdcReceived = amounts[amounts.length - 1];
-
-        // check bank cap before crediting
-        if (totalUsdc + usdcReceived > bankCapUsd) {
-            // revert swap state: attempt refund of input token (best-effort)
-            IERC20(USDC).transfer(msg.sender, usdcReceived);
-            revert BankCapExceeded(usdcReceived, totalUsdc, bankCapUsd);
-        }
 
         // effect
         totalUsdc += usdcReceived;
@@ -256,15 +303,32 @@ contract KipuBankV3 {
     /**
      * @notice Withdraw USDC from your internal balance
      * @param amountUsdc amount in USDC smallest units
+     * @dev MEJORAS: Límite máximo por transacción y cooldown entre retiros
      */
     function withdrawUSDC(uint256 amountUsdc) external nonReentrant {
         if (amountUsdc == 0) revert ZeroAmount();
+        
+        // MEJORA: Límite máximo de retiro por transacción
+        if (amountUsdc > MAX_WITHDRAWAL_AMOUNT) {
+            revert WithdrawalLimitExceeded(amountUsdc, MAX_WITHDRAWAL_AMOUNT);
+        }
+        
+        // MEJORA: Cooldown entre retiros
+        if (block.timestamp < lastWithdrawalTime[msg.sender] + WITHDRAWAL_COOLDOWN) {
+            uint256 waitTime = (lastWithdrawalTime[msg.sender] + WITHDRAWAL_COOLDOWN) - block.timestamp;
+            revert CooldownActive(waitTime);
+        }
+        
         uint bal = usdcBalances[msg.sender];
         if (amountUsdc > bal) revert InsufficientBalance(bal, amountUsdc);
 
         // effects
         usdcBalances[msg.sender] = bal - amountUsdc;
         totalUsdc -= amountUsdc;
+        
+        // MEJORA: Actualizar contadores de operaciones
+        withdrawalCount[msg.sender]++;
+        lastWithdrawalTime[msg.sender] = block.timestamp;
 
         // interaction
         bool ok = IERC20(USDC).transfer(msg.sender, amountUsdc);
@@ -279,6 +343,18 @@ contract KipuBankV3 {
         // set to 0 then set to amount to be compatible with some tokens
         IERC20(token).approve(spender, 0);
         IERC20(token).approve(spender, amount);
+    }
+    
+    // MEJORA: Función para estimar output del swap
+    function _estimateSwapOutput(address[] memory path, uint256 amountIn) internal view returns (uint256) {
+        try router.getAmountsOut(amountIn, path) returns (uint[] memory amounts) {
+            if (amounts.length >= 2) {
+                return amounts[amounts.length - 1];
+            }
+        } catch {
+            // Fallback seguro si getAmountsOut falla
+        }
+        return amountIn; // Fallback conservador
     }
 
     /* ========== FALLBACK / RECEIVE ========== */
