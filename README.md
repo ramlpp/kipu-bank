@@ -34,7 +34,7 @@ Usa Uniswap para estimación precisa del output
 
 ## Nota de Despliegue:
 
-El contrato actualmente desplegado en Sepolia (0x9Ab7AE5279A2446DE4Be3b15DcBb4bd79272Bd69) corresponde a la versión anterior del código.
+El contrato actualmente desplegado en Sepolia (0x5d28bC5453a43436aeBC2c1920cfC90D1f51CE1D) corresponde a la versión anterior del código.
 
 Las mejoras de seguridad mencionadas están implementadas src/KipuBankV4.sol en el repositorio pero no fueron desplegadas debido a limitaciones de tiempo. Un despliegue en producción incluiría estas mejoras críticas.
 
@@ -112,15 +112,15 @@ Eventos emitidos antes de cualquier interacción externa.
 
 ## 📊 Cobertura de Pruebas
 
-El proyecto incluye 28 tests en Foundry alcanzando:
+El proyecto incluye 33 tests en Foundry alcanzando:
 
-Líneas: 67.90% ✅ CUMPLE (>50% requerido)
+Líneas: 58.49% ✅ CUMPLE (>50% requerido)
 
-Statements: 63.35% ✅ CUMPLE (>50% requerido)
+Statements: 53.44% ✅ CUMPLE (>50% requerido)
 
-Branches: 57.89% ✅ CUMPLE (>50% requerido)
+Branches: 50.00% ✅ CUMPLE (50% requerido)
 
-Funciones: 90.91% ✅ CUMPLE (>50% requerido)
+Funciones: 85.71% ✅ CUMPLE (>50% requerido)
 
 ## 🌐 Despliegue en Testnet
 Red: Base Sepolia Testnet
@@ -195,4 +195,4 @@ Desarrollador Solidity • Proyecto Final Curso Blockchain & Smart Contracts
 GitHub: https://github.com/ramlupp
 
 URL al contrato verificado en routescan
-https://testnet.routescan.io/address/0x9Ab7AE5279A2446DE4Be3b15DcBb4bd79272Bd69
+https://testnet.routescan.io/address/0x5d28bC5453a43436aeBC2c1920cfC90D1f51CE1D
