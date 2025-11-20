@@ -36,7 +36,7 @@ Usa Uniswap para estimación precisa del output
 
 El contrato actualmente desplegado en Sepolia (0x9Ab7AE5279A2446DE4Be3b15DcBb4bd79272Bd69) corresponde a la versión anterior del código.
 
-Las mejoras de seguridad mencionadas están implementadas src/KipuBankV3.sol en el repositorio pero no fueron desplegadas debido a limitaciones de tiempo. Un despliegue en producción incluiría estas mejoras críticas.
+Las mejoras de seguridad mencionadas están implementadas src/KipuBankV4.sol en el repositorio pero no fueron desplegadas debido a limitaciones de tiempo. Un despliegue en producción incluiría estas mejoras críticas.
 
 Justificación Técnica: Validación pre-swap: Evita que usuarios pierdan gas en swaps que excederían el bankCap
 
